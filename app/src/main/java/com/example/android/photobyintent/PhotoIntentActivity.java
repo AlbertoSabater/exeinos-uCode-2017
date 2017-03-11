@@ -393,6 +393,8 @@ public class PhotoIntentActivity extends Activity {
 			break;
 		} // ACTION_TAKE_PHOTO_S
 		} // switch
+
+
 	}
 
 	// Some lifecycle callbacks so that the image can survive orientation change
