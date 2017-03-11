@@ -43,6 +43,7 @@ import retrofit2.Response;
 
 
 public class PhotoIntentActivity extends Activity {
+    private static final String TAG = PhotoIntentActivity.class.getSimpleName();
 
 	private static final int ACTION_TAKE_PHOTO_B = 1;
 	private static final int ACTION_TAKE_PHOTO_S = 2;
@@ -371,6 +372,12 @@ public class PhotoIntentActivity extends Activity {
 		);
 
         Button speakButton = (Button) findViewById(R.id.speakButton);
+        speakButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                speakButtonClicked(view);
+            }
+        });
 
 
 
@@ -433,15 +440,21 @@ public class PhotoIntentActivity extends Activity {
 			break;
 		} // ACTION_TAKE_PHOTO_S
             case SPEAK_REQUEST_CODE: {
-                Intent intent = new Intent(PhotoIntentActivity.this, OptionsActivity.class);
-                //based on item add info to intent
-                ArrayList<String> heard = data.getStringArrayListExtra(
-                        RecognizerIntent.EXTRA_RESULTS);
-                ArrayList<String>  matches = get
+                if (resultCode == RESULT_OK){
+                    Intent intent = new Intent(PhotoIntentActivity.this, OptionsActivity.class);
+                    //based on item add info to intent
+                    ArrayList<String> heard = data.getStringArrayListExtra(
+                            RecognizerIntent.EXTRA_RESULTS);
 
-                intent.putExtra(EXTRA_MESSAGE, matches);
+                    Log.i(TAG, "heard: " + heard.size());
+                    ArrayList<String>  matches = getWords(heard);
 
-                startActivity(intent);
+                    Log.i(TAG, "matches: " + matches.size());
+
+                    intent.putExtra(EXTRA_MESSAGE, matches);
+
+                    startActivity(intent);
+                }
                 break;
             }
 
@@ -451,26 +464,52 @@ public class PhotoIntentActivity extends Activity {
 	}
 
     /**
-     * Returns
+     * Returns an array containing the words matched
      *
-     * @return String[] containing the recognized words from the phrase
+     * @return ArrayList<String> containing the recognized words from the phrase
      */
     protected ArrayList<String> getWords(ArrayList<String> heard){
 
-        ArrayList<String> matches;
+        ArrayList<String> matches = new ArrayList<String>();
         for (String match: heard)
         {
             for (String word: match.split(" "))
             {
-                if()
+                String matched = getMatches(word);
+                if(matched!=null){
+                    matched.toString(); // CAMBIAR PARA PONER BONITO
+                    matches.add(matched.toString());
+                }
+
             }
         }
 
-        return null;
+        return matches;
     }
 
     protected String getMatches(String possibility){
-        return null;
+        String matched = "";
+
+        switch(possibility){
+            case "precio":
+                matched = matched + " Se mostraria el precio";
+                break;
+            case "tamaño":
+                matched = matched + " Se mostrarian los tamaños displonibles";
+                break;
+            case "colores":
+                matched = matched + " Se mostrarian los colores disponibles";
+                break;
+            case "modelos":
+                matched = matched + " Se mostrarian otros modelos";
+                break;
+            default:
+//                matched = "No estoy pillando nada " + possibility ;
+                matched = null;
+                break;
+
+        }
+        return matched;
     }
 
 	// Some lifecycle callbacks so that the image can survive orientation change
