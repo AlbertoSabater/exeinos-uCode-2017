@@ -1,28 +1,28 @@
 package com.example.android.photobyintent;
 
-import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import com.squareup.okhttp.OkHttpClient;
+
+import java.util.concurrent.TimeUnit;
+
+import retrofit.RestAdapter;
 
 /**
  * Created by DaniSalva on 11/03/2017.
  */
 class ServiceGenerator {
 
-    private static final String BASE_URL = "https://api.github.com/";
+    private static final String BASE_URL = "http://192.168.2.3:8080";
 
-    private static Retrofit.Builder builder =
-            new Retrofit.Builder()
-                    .baseUrl(BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create());
+        private static final RestAdapter REST_ADAPTER = new RestAdapter.Builder()
+                .setEndpoint(BASE_URL)
+                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .build();
 
-    private static Retrofit retrofit = builder.build();
+        private static final ServerManager API_SERVICE = REST_ADAPTER.create(ServerManager.class);
 
-    private static OkHttpClient.Builder httpClient =
-            new OkHttpClient.Builder();
+        public static ServerManager getApiService() {
+            return API_SERVICE;
+        }
 
-    public static <S> S createService(
-            Class<S> serviceClass) {
-        return retrofit.create(serviceClass);
-    }
+
 }

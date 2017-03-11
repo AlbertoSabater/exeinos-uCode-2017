@@ -10,13 +10,13 @@
         android:paddingBottom="4dip"
         android:text="Click the button and start speaking" />
 
-    <Button android:id="@+id/speakButton"
+    <Button android:id="@+id/speakButton2"
         android:layout_width="fill_parent"
         android:onClick="speakButtonClicked"
         android:layout_height="wrap_content"
         android:text="Click Me!" />
 
-    <ListView android:id="@+id/list"
+    <ListView android:id="@+id/list2"
         android:layout_width="fill_parent"
         android:layout_height="0dip"
         android:layout_weight="1" />

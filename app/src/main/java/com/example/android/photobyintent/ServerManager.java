@@ -1,29 +1,30 @@
 package com.example.android.photobyintent;
+import com.squareup.okhttp.ResponseBody;
 
+import retrofit.Callback;
+import retrofit.http.GET;
+import retrofit.http.Multipart;
+import retrofit.http.POST;
+import retrofit.http.Part;
+import retrofit.mime.TypedFile;
 
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.http.GET;
-import retrofit2.http.Multipart;
-import retrofit2.http.POST;
-import retrofit2.http.Part;
 
 /**
  * Created by DSalvador on 11/03/2017.
  */
 public interface ServerManager {
 
-        @Multipart
-        @POST("upload")
-        Call<ResponseBody> upload(
-                @Part("description") RequestBody description,
-                @Part MultipartBody.Part file
-        );
 
-        @GET("download")
-        Call<ResponseBody> download();
+    @Multipart
+    @POST("/upload")
+    void upload(@Part("myfile") TypedFile file,
+                @Part("description") String description,
+                Callback<String> cb);
+
+    @GET("/test")
+     void test(Callback<String> cb);
+
+       // @GET("/download")
+       // Call<ResponseBody> download();
 
 }

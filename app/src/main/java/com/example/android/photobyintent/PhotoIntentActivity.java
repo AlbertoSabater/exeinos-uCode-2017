@@ -33,15 +33,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.VideoView;
 
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-
 public class PhotoIntentActivity extends Activity {
     private static final String TAG = PhotoIntentActivity.class.getSimpleName();
 
@@ -54,6 +45,7 @@ public class PhotoIntentActivity extends Activity {
 	private Bitmap mImageBitmap;
 
 	private String mCurrentPhotoPath;
+    private AuxMethods auxM;
 
 	private static final String JPEG_FILE_PREFIX = "IMG_";
 	private static final String JPEG_FILE_SUFFIX = ".jpg";
@@ -93,7 +85,6 @@ public class PhotoIntentActivity extends Activity {
 		
 		return storageDir;
 	}
-
 	private File createImageFile() throws IOException {
 		// Create an image file name
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
@@ -139,16 +130,20 @@ public class PhotoIntentActivity extends Activity {
 		bmOptions.inPurgeable = true;
 
 		/* Decode the JPEG file into a Bitmap */
+		Log.d("image","path111: "+mCurrentPhotoPath);
+
 		Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
 		
 		/* Associate the Bitmap to the ImageView */
 		mImageView.setImageBitmap(bitmap);
 		mImageView.setVisibility(View.VISIBLE);
 
-        show_Dialog();
+        if(mCurrentPhotoPath!=null){
+			show_Dialog(mCurrentPhotoPath);
+		}
 	}
 
-    private void show_Dialog(){
+    private void show_Dialog(final String photoPath){
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
         builder1.setMessage("Would you like to send the picture?");
         builder1.setCancelable(true);
@@ -157,6 +152,7 @@ public class PhotoIntentActivity extends Activity {
                 "Yes",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+						auxM.callWS_upload(photoPath);
                         dialog.cancel();
                     }
                 });
@@ -172,120 +168,9 @@ public class PhotoIntentActivity extends Activity {
         AlertDialog alert11 = builder1.create();
         alert11.show();
     }
-    private void callWS_upload(){
 
-        ServerManager service =
-                ServiceGenerator.createService(ServerManager.class);
 
-        File file = new File(mCurrentPhotoPath);
 
-        // create RequestBody instance from file
-        RequestBody requestFile =
-                RequestBody.create(
-                        MediaType.parse("multipart/form-data"),
-                        file
-                );
-
-        // MultipartBody.Part is used to send also the actual file name
-        MultipartBody.Part body =
-                MultipartBody.Part.createFormData("picture", file.getName(), requestFile);
-
-        // add another part within the multipart request
-        String descriptionString = "hello, this is description speaking";
-        RequestBody description =
-                RequestBody.create(
-                        okhttp3.MultipartBody.FORM, descriptionString);
-
-        // finally, execute the request
-        Call<ResponseBody> call = service.upload(description, body);
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call,
-                                   Response<ResponseBody> response) {
-                Log.v("Upload", "success");
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("Upload error:", t.getMessage());
-            }
-        });
-    }
-
-    private boolean writeResponseBodyToDisk(ResponseBody body) {
-        try {
-            // todo change the file location/name according to your needs
-            File futureStudioIconFile = new File(getExternalFilesDir(null) + File.separator + "Future Studio Icon.png");
-
-            InputStream inputStream = null;
-            OutputStream outputStream = null;
-
-            try {
-                byte[] fileReader = new byte[4096];
-
-                long fileSize = body.contentLength();
-                long fileSizeDownloaded = 0;
-
-                inputStream = body.byteStream();
-                outputStream = new FileOutputStream(futureStudioIconFile);
-
-                while (true) {
-                    int read = inputStream.read(fileReader);
-
-                    if (read == -1) {
-                        break;
-                    }
-
-                    outputStream.write(fileReader, 0, read);
-
-                    fileSizeDownloaded += read;
-
-                    Log.d("write", "file download: " + fileSizeDownloaded + " of " + fileSize);
-                }
-
-                outputStream.flush();
-
-                return true;
-            } catch (IOException e) {
-                return false;
-            } finally {
-                if (inputStream != null) {
-                    inputStream.close();
-                }
-
-                if (outputStream != null) {
-                    outputStream.close();
-                }
-            }
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
-    private void callWS_download(){
-        ServerManager downloadService = ServiceGenerator.createService(ServerManager.class);
-        Call<ResponseBody> call = downloadService.download();
-
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful()) {
-                    Log.d("download", "server contacted and has file");
-
-                    boolean writtenToDisk = writeResponseBodyToDisk(response.body());
-
-                    Log.d("download", "file download was a success? " + writtenToDisk);
-                } else {
-                    Log.d("download", "server contact failed");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("download", "error");
-            }
-        });
-    }
 
 	private void galleryAddPic() {
 		    Intent mediaScanIntent = new Intent("android.intent.action.MEDIA_SCANNER_SCAN_FILE");
@@ -360,7 +245,8 @@ public class PhotoIntentActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-
+        auxM = new AuxMethods();
+		auxM.callWS_test();
 		mImageView = (ImageView) findViewById(R.id.imageView1);
 		mImageBitmap = null;
 
@@ -372,6 +258,7 @@ public class PhotoIntentActivity extends Activity {
 		);
 
         Button speakButton = (Button) findViewById(R.id.speakButton);
+		Log.d("speak",speakButton.toString());
         speakButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -447,7 +334,7 @@ public class PhotoIntentActivity extends Activity {
                             RecognizerIntent.EXTRA_RESULTS);
 
                     Log.i(TAG, "heard: " + heard.size());
-                    ArrayList<String>  matches = getWords(heard);
+                    ArrayList<String>  matches = auxM.getWords(heard);
 
                     Log.i(TAG, "matches: " + matches.size());
 
@@ -463,54 +350,6 @@ public class PhotoIntentActivity extends Activity {
 
 	}
 
-    /**
-     * Returns an array containing the words matched
-     *
-     * @return ArrayList<String> containing the recognized words from the phrase
-     */
-    protected ArrayList<String> getWords(ArrayList<String> heard){
-
-        ArrayList<String> matches = new ArrayList<String>();
-        for (String match: heard)
-        {
-            for (String word: match.split(" "))
-            {
-                String matched = getMatches(word);
-                if(matched!=null){
-                    matched.toString(); // CAMBIAR PARA PONER BONITO
-                    matches.add(matched.toString());
-                }
-
-            }
-        }
-
-        return matches;
-    }
-
-    protected String getMatches(String possibility){
-        String matched = "";
-
-        switch(possibility){
-            case "precio":
-                matched = matched + " Se mostraria el precio";
-                break;
-            case "tamaño":
-                matched = matched + " Se mostrarian los tamaños displonibles";
-                break;
-            case "colores":
-                matched = matched + " Se mostrarian los colores disponibles";
-                break;
-            case "modelos":
-                matched = matched + " Se mostrarian otros modelos";
-                break;
-            default:
-//                matched = "No estoy pillando nada " + possibility ;
-                matched = null;
-                break;
-
-        }
-        return matched;
-    }
 
 	// Some lifecycle callbacks so that the image can survive orientation change
 	@Override
