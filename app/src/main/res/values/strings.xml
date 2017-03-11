@@ -6,4 +6,8 @@
     <string name="btnIntendS">Take (small) Picture</string>
     <string name="cannot">Cannot</string>
     <string name="album_name">CameraSample</string>
+    <string name="price">price</string>
+    <string name="size">size</string>
+    <string name="colors">available colors</string>
+    <string name="models">other models</string>
 </resources>

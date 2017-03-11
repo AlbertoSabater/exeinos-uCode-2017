@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="price">precio</string>
+    <string name="size">talla</string>
+    <string name="colors">colores disponibles</string>
+    <string name="models">otros modelos</string>
+</resources>
