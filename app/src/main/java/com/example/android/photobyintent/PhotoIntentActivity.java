@@ -139,11 +139,11 @@ public class PhotoIntentActivity extends Activity {
 		mImageView.setVisibility(View.VISIBLE);
 
         if(mCurrentPhotoPath!=null){
-			show_Dialog(mCurrentPhotoPath);
+			show_Dialog(mCurrentPhotoPath,bitmap);
 		}
 	}
 
-    private void show_Dialog(final String photoPath){
+    private void show_Dialog(final String photoPath, final Bitmap bitmap){
         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
         builder1.setMessage("Would you like to send the picture?");
         builder1.setCancelable(true);
@@ -152,7 +152,8 @@ public class PhotoIntentActivity extends Activity {
                 "Yes",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-						auxM.callWS_upload(photoPath);
+						auxM.callWS_try(photoPath,bitmap);
+						// auxM.callWS_upload(photoPath);
                         dialog.cancel();
                     }
                 });
@@ -246,7 +247,7 @@ public class PhotoIntentActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
         auxM = new AuxMethods();
-		auxM.callWS_test();
+		//auxM.callWS_test();
 		mImageView = (ImageView) findViewById(R.id.imageView1);
 		mImageBitmap = null;
 

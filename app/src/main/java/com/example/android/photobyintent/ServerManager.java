@@ -1,12 +1,15 @@
 package com.example.android.photobyintent;
-import com.squareup.okhttp.ResponseBody;
+import java.util.Map;
 
-import retrofit.Callback;
-import retrofit.http.GET;
-import retrofit.http.Multipart;
-import retrofit.http.POST;
-import retrofit.http.Part;
-import retrofit.mime.TypedFile;
+import okhttp3.RequestBody;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.http.Multipart;
+import retrofit2.http.POST;
+import retrofit2.http.Part;
+import retrofit2.http.PartMap;
+import retrofit2.http.Path;
 
 
 /**
@@ -14,15 +17,22 @@ import retrofit.mime.TypedFile;
  */
 public interface ServerManager {
 
+    @Multipart
+    @POST("/upload")
+    Call<ResponseBody> upload(@Part("description") String description, @PartMap Map<String, RequestBody> image);
 
     @Multipart
+    @POST("/upload")
+    Call<ResponseBody> prueba(@Part("image") String user);
+    /*@Multipart
     @POST("/upload")
     void upload(@Part("myfile") TypedFile file,
                 @Part("description") String description,
                 Callback<String> cb);
 
+
     @GET("/test")
-     void test(Callback<String> cb);
+     void test(Callback<String> cb);*/
 
        // @GET("/download")
        // Call<ResponseBody> download();
