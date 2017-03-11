@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,10 +24,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.VideoView;
 
 import okhttp3.MediaType;
@@ -54,6 +58,10 @@ public class PhotoIntentActivity extends Activity {
 	private static final String JPEG_FILE_SUFFIX = ".jpg";
 
 	private AlbumStorageDirFactory mAlbumStorageDirFactory = null;
+
+    private static final int SPEAK_REQUEST_CODE = 1234;
+    public static final String EXTRA_MESSAGE = "com.example.android.photobyintent.MESSAGE";
+    private ListView wordsList;
 
 	
 	/* Photo album for this application */
@@ -362,12 +370,24 @@ public class PhotoIntentActivity extends Activity {
 				MediaStore.ACTION_IMAGE_CAPTURE
 		);
 
-		Button picSBtn = (Button) findViewById(R.id.btnIntendS);
-		setBtnListenerOrDisable( 
-				picSBtn, 
-				mTakePicSOnClickListener,
-				MediaStore.ACTION_IMAGE_CAPTURE
-		);
+        Button speakButton = (Button) findViewById(R.id.speakButton);
+
+
+
+//        wordsList = (ListView) findViewById(R.id.list);
+//
+//        wordsList.setOnItemClickListener(new ListView.OnItemClickListener(){
+//            @Override
+//            public void onItemClick(AdapterView<?> adapter, View v, int position, long id){
+//                String item = (String) adapter.getItemAtPosition(position);
+//
+//                Intent intent = new Intent(PhotoIntentActivity.this, OptionsActivity.class);
+//                //based on item add info to intent
+//                intent.putExtra(EXTRA_MESSAGE, item);
+//
+//                startActivity(intent);
+//            }
+//        });
 		
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
 			mAlbumStorageDirFactory = new FroyoAlbumDirFactory();
@@ -375,6 +395,26 @@ public class PhotoIntentActivity extends Activity {
 			mAlbumStorageDirFactory = new BaseAlbumDirFactory();
 		}
 	}
+
+    /**
+     * Handle the action of the button being clicked
+     */
+    public void speakButtonClicked(View v)
+    {
+        startVoiceRecognitionActivity();
+    }
+
+    /**
+     * Fire an intent to start the voice recognition activity.
+     */
+    private void startVoiceRecognitionActivity()
+    {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Voice recognition Demo...");
+        startActivityForResult(intent, SPEAK_REQUEST_CODE);
+    }
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -392,10 +432,46 @@ public class PhotoIntentActivity extends Activity {
 			}
 			break;
 		} // ACTION_TAKE_PHOTO_S
+            case SPEAK_REQUEST_CODE: {
+                Intent intent = new Intent(PhotoIntentActivity.this, OptionsActivity.class);
+                //based on item add info to intent
+                ArrayList<String> heard = data.getStringArrayListExtra(
+                        RecognizerIntent.EXTRA_RESULTS);
+                ArrayList<String>  matches = get
+
+                intent.putExtra(EXTRA_MESSAGE, matches);
+
+                startActivity(intent);
+                break;
+            }
+
 		} // switch
 
 
 	}
+
+    /**
+     * Returns
+     *
+     * @return String[] containing the recognized words from the phrase
+     */
+    protected ArrayList<String> getWords(ArrayList<String> heard){
+
+        ArrayList<String> matches;
+        for (String match: heard)
+        {
+            for (String word: match.split(" "))
+            {
+                if()
+            }
+        }
+
+        return null;
+    }
+
+    protected String getMatches(String possibility){
+        return null;
+    }
 
 	// Some lifecycle callbacks so that the image can survive orientation change
 	@Override

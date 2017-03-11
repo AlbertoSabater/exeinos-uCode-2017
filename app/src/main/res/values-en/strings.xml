@@ -5,4 +5,5 @@
     <string name="size">size</string>
     <string name="colors">available colors</string>
     <string name="models">other models</string>
+    <string name="btnIntendS">Talk to me!</string>
 </resources>
