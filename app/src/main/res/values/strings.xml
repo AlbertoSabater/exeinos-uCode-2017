@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, PhotoIntentActivity!</string>
+    <string name="app_name">Exeinos is all in</string>
+    <string name="btnIntend">Capture my sneaker</string>
+    <string name="btnIntendS">Take (small) Picture</string>
+    <string name="cannot">Cannot</string>
+    <string name="album_name">CameraSample</string>
+</resources>
