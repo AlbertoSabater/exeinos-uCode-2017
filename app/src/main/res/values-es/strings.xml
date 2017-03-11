@@ -5,4 +5,5 @@
     <string name="size">talla</string>
     <string name="colors">colores disponibles</string>
     <string name="models">otros modelos</string>
+    <string name="btnIntendS">¡Te escucho!</string>
 </resources>
