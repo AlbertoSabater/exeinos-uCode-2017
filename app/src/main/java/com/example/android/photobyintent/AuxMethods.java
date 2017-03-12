@@ -66,16 +66,18 @@ public class AuxMethods {
     protected ArrayList<String> getWords(ArrayList<String> heard, ResultModel model){
 
         ArrayList<String> matches = new ArrayList<String>();
+        Set<String> matchedWords = new HashSet<String>();
 
         Set<String> heardSet = new HashSet<String>(heard);
         for (String match: heardSet)
         {
             for (String word: match.split(" "))
             {
-                String matched = getMatches(word,model);
-                if(matched!=null){
-                    matched.toString(); // CAMBIAR PARA PONER BONITO
-                    matches.add(matched.toString());
+                String result = getMatches(word,model);
+                if(result!=null && !matchedWords.contains(word) ){
+//                    result.toString(); // CAMBIAR PARA PONER BONITO
+                    matchedWords.add(word);
+                    matches.add(result.toString());
                 }
 
             }
@@ -112,7 +114,7 @@ public class AuxMethods {
                 break;
             case "comments":
                 matched = matched + "Comentarios: "+(resmodel.getSentymental_analysis()*100)+" %Positividad";
-                result.speakWords("Los comentarios son positivos");
+                result.speakWords("Mas del " + (resmodel.getSentymental_analysis()*100) + "% de los comentarios son positivos");
                 break;
             case "comentarios":
                 matched = matched + "Comentarios: "+(resmodel.getSentymental_analysis()*100)+" %Positividad";
