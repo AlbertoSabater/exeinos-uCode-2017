@@ -8,16 +8,23 @@
    android:orientation="horizontal"
    android:layout_height="wrap_content"
    android:layout_width="match_parent"
-   >
-    <Button android:text="@string/btnIntend" android:id="@+id/btnIntend"
-        android:layout_height="wrap_content"
-        android:layout_width="0dp"
-        android:layout_weight="1" />
-    <Button android:text="@string/speakButton" android:id="@+id/speakButton"
-        android:layout_height="wrap_content"
-        android:layout_width="0dp"
-        android:layout_weight="1" />
+       android:gravity="center_horizontal"
+       android:layout_marginTop="15dp">
+       <Button
+           android:id="@+id/btnIntend"
+           android:gravity="center_horizontal"
+           android:layout_gravity="center_horizontal"
+           android:layout_marginTop="10dp"
+           android:layout_width="100dp"
+           android:layout_height="100dp"
+           android:background="@drawable/circle"
+           android:drawableTop="@android:drawable/ic_menu_camera"
+           android:paddingTop="20dp"
+           android:text="Capture"
+           android:textColor="#fff" />
+
   </LinearLayout>
+
   <ImageView 
       android:layout_height="wrap_content" 
       android:layout_width="wrap_content" 

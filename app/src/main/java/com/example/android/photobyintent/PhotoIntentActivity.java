@@ -25,15 +25,19 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.speech.RecognizerIntent;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.VideoView;
 
-public class PhotoIntentActivity extends Activity {
+public class PhotoIntentActivity extends AppCompatActivity {
     private static final String TAG = PhotoIntentActivity.class.getSimpleName();
 
 	private static final int ACTION_TAKE_PHOTO_B = 1;
@@ -152,10 +156,15 @@ public class PhotoIntentActivity extends Activity {
                 "Yes",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-						auxM.callWS_try(photoPath,bitmap);
+						//auxM.callWS_try(photoPath,bitmap);
 						// auxM.callWS_upload(photoPath);
                         dialog.cancel();
-                    }
+						mImageView.setVisibility(View.INVISIBLE);
+						mImageBitmap = null;
+						mImageView.invalidate();
+						Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
+						startActivity(intent);
+					}
                 });
 
         builder1.setNegativeButton(
@@ -163,11 +172,20 @@ public class PhotoIntentActivity extends Activity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
-                    }
+						mImageView.setVisibility(View.INVISIBLE);
+						mImageBitmap = null;
+						mImageView.invalidate();
+
+					}
                 });
 
         AlertDialog alert11 = builder1.create();
-        alert11.show();
+
+		WindowManager.LayoutParams wmlp = alert11.getWindow().getAttributes();
+
+		wmlp.gravity= Gravity.BOTTOM;
+
+		alert11.show();
     }
 
 
@@ -233,14 +251,6 @@ public class PhotoIntentActivity extends Activity {
 		}
 	};
 
-	Button.OnClickListener mTakePicSOnClickListener = 
-		new Button.OnClickListener() {
-		@Override
-		public void onClick(View v) {
-			dispatchTakePictureIntent(ACTION_TAKE_PHOTO_S);
-		}
-	};
-
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -257,16 +267,6 @@ public class PhotoIntentActivity extends Activity {
 				mTakePicOnClickListener,
 				MediaStore.ACTION_IMAGE_CAPTURE
 		);
-
-        Button speakButton = (Button) findViewById(R.id.speakButton);
-		Log.d("speak",speakButton.toString());
-        speakButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                speakButtonClicked(view);
-            }
-        });
-
 
 
 //        wordsList = (ListView) findViewById(R.id.list);
@@ -291,26 +291,6 @@ public class PhotoIntentActivity extends Activity {
 		}
 	}
 
-    /**
-     * Handle the action of the button being clicked
-     */
-    public void speakButtonClicked(View v)
-    {
-        startVoiceRecognitionActivity();
-    }
-
-    /**
-     * Fire an intent to start the voice recognition activity.
-     */
-    private void startVoiceRecognitionActivity()
-    {
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Voice recognition Demo...");
-        startActivityForResult(intent, SPEAK_REQUEST_CODE);
-    }
-
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (requestCode) {
@@ -326,25 +306,7 @@ public class PhotoIntentActivity extends Activity {
 				handleSmallCameraPhoto(data);
 			}
 			break;
-		} // ACTION_TAKE_PHOTO_S
-            case SPEAK_REQUEST_CODE: {
-                if (resultCode == RESULT_OK){
-                    Intent intent = new Intent(PhotoIntentActivity.this, OptionsActivity.class);
-                    //based on item add info to intent
-                    ArrayList<String> heard = data.getStringArrayListExtra(
-                            RecognizerIntent.EXTRA_RESULTS);
-
-                    Log.i(TAG, "heard: " + heard.size());
-                    ArrayList<String>  matches = auxM.getWords(heard);
-
-                    Log.i(TAG, "matches: " + matches.size());
-
-                    intent.putExtra(EXTRA_MESSAGE, matches);
-
-                    startActivity(intent);
-                }
-                break;
-            }
+		}
 
 		} // switch
 
