@@ -91,7 +91,7 @@ public class AuxMethods {
 
         switch(possibility){
             case "price":
-                matched = matched + "Precio: "+resmodel.getPrice();
+                matched = matched + "Precio: "+resmodel.getPrice() + " €";
                 result.speakWords("El precio del producto es de "+resmodel.getPrice());
                 break;
             case "precio":
