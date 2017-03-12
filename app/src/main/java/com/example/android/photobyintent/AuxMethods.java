@@ -79,10 +79,8 @@ public class AuxMethods {
                     matchedWords.add(word);
                     matches.add(result.toString());
                 }
-
             }
         }
-
         return matches;
     }
 

@@ -245,6 +245,8 @@ public class PhotoIntentActivity extends AppCompatActivity {
 	private void handleBigCameraPhoto() {
 
 		if (mCurrentPhotoPath != null) {
+			View b = findViewById(R.id.btnIntend);
+			b.setVisibility(View.GONE);
 			setPic();
 			//galleryAddPic();
 			mCurrentPhotoPath = null;
@@ -298,6 +300,8 @@ public class PhotoIntentActivity extends AppCompatActivity {
 		} else {
 			mAlbumStorageDirFactory = new BaseAlbumDirFactory();
 		}
+
+
 	}
 
 	@Override
