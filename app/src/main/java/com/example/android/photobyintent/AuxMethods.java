@@ -155,7 +155,7 @@ public class AuxMethods {
     }
 
     protected void callWS_try(String photoPath,Bitmap bitmap){
-        String API_BASE_URL = "http://192.168.2.3:8080";
+        String API_BASE_URL = "http://192.168.2.5:8080";
 
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
     // set your desired log level
