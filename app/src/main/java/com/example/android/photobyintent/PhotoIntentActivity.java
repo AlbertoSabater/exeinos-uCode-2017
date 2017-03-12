@@ -19,6 +19,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,8 +38,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.VideoView;
 
-public class PhotoIntentActivity extends AppCompatActivity {
-    private static final String TAG = PhotoIntentActivity.class.getSimpleName();
+public class PhotoIntentActivity extends Activity {
+    private static final String NODE_IP = "http://192.168.2.5:8081";
+    private static final String TAG = "PHOTO INTENT";
 
 	private static final int ACTION_TAKE_PHOTO_B = 1;
 	private static final int ACTION_TAKE_PHOTO_S = 2;
@@ -156,8 +158,12 @@ public class PhotoIntentActivity extends AppCompatActivity {
                 "Yes",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-						auxM.callWS_try(photoPath,bitmap);
+//						auxM.callWS_try(photoPath,bitmap);
 						// auxM.callWS_upload(photoPath);
+
+//                        Log.d(TAG, "IP: " + NODE_IP);
+//                        auxM.connectToNodeServer(NODE_IP, photoPath);
+
                         dialog.cancel();
 						mImageView.setVisibility(View.INVISIBLE);
 						mImageBitmap = null;

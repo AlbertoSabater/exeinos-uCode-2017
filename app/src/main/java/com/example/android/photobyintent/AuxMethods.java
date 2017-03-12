@@ -1,9 +1,14 @@
 package com.example.android.photobyintent;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.TextView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -15,8 +20,13 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -29,6 +39,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static android.R.attr.name;
+
 
 /**
  * Created by Fernando on 11/03/2017.
@@ -36,6 +48,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AuxMethods {
     ResultActivity result;
+
+    private static final String TAG = "SOCKET";
+    private Socket socket;
 
     public AuxMethods(ResultActivity res){
         result=res;
@@ -48,7 +63,9 @@ public class AuxMethods {
     protected ArrayList<String> getWords(ArrayList<String> heard){
 
         ArrayList<String> matches = new ArrayList<String>();
-        for (String match: heard)
+
+        Set<String> heardSet = new HashSet<String>(heard);
+        for (String match: heardSet)
         {
             for (String word: match.split(" "))
             {
@@ -63,6 +80,8 @@ public class AuxMethods {
 
         return matches;
     }
+
+
 
     protected String getMatches(String possibility){
         String matched = "";
@@ -80,9 +99,18 @@ public class AuxMethods {
                 matched = matched + "A los usuarios les gusta mucho";
                 result.speakWords("Disponible en color negro");
                 break;
-            case "model":
+            case "color":
+                matched = matched + " Se mostrarian los colores disponibles";
+                break;
+            case "modelos":
                 matched = matched + " Se mostrarian otros modelos";
                 result.speakWords("El modelo es el Adidas Gazelle");
+                break;
+            case "otras":
+                matched = matched + " Se mostrarian otros modelos";
+                break;
+            case "zapatillas":
+                matched = matched + " Se mostrarian otros modelos";
                 break;
             default:
 //                matched = "No estoy pillando nada " + possibility ;
@@ -93,25 +121,73 @@ public class AuxMethods {
         return matched;
     }
 
-    /*protected void callWS_test() {
-        ServiceGenerator.getApiService().test(new Callback<String>() {
-            @Override
-            public void success(String s, Response response) {
-                Log.e("test", "success");
-
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                Log.e("test", "Fail " +error.getMessage());
-
-            }
-        });
+    public void sendImage(String path)
+    {
+        JSONObject sendData = new JSONObject();
+        try{
+            sendData.put("image", encodeImage(path));
+            socket.emit("message",sendData);
+        }catch(JSONException e){
+        }
     }
 
-    protected void WSAndroid(){
+    private String encodeImage(String path)
+    {
+        File imagefile = new File(path);
+        FileInputStream fis = null;
+        try{
+            fis = new FileInputStream(imagefile);
+        }catch(FileNotFoundException e){
+            e.printStackTrace();
+        }
+        Bitmap bm = BitmapFactory.decodeStream(fis);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG,100,baos);
+        byte[] b = baos.toByteArray();
+        String encImage = Base64.encodeToString(b, Base64.DEFAULT);
+        //Base64.de
+        return encImage;
+
     }
-    */
+
+    public boolean connectToNodeServer(String ip, String path){
+        Log.d(TAG, "Entro en connectToNodeServer");
+        try {
+            socket = IO.socket(ip);
+        } catch (java.net.URISyntaxException e) {
+            Log.d(TAG, "Ha petado porque no encuentra el servidor");
+            return false;
+        }
+        socket.connect();
+
+        socket.on("transfered", onTransfered);
+//        socket.on("user joined", onUserJoined);
+//        socket.on("user left", onUserLeft);
+//        socket.on("typing", onTyping);
+//        socket.on("stop typing", onStopTyping);
+
+        JSONObject sendData = new JSONObject();
+        try{
+            sendData.put("image", encodeImage(path));
+            socket.emit("image_upload",sendData);
+        }catch(JSONException e){
+            Log.d(TAG, "Ha petado porque da un JSON Exception");
+            socket.close();
+            return false;
+        }
+
+        //socket.close();
+        return true;
+    }
+
+    private Emitter.Listener onTransfered = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            Log.i(TAG, "transfered");
+        }
+    };
+
+
     protected void callWS_upload(String photoPath){
         String API_BASE_URL = "http://192.168.2.3:8080";
 
