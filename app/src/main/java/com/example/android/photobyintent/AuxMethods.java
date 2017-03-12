@@ -91,39 +91,39 @@ public class AuxMethods {
 
         switch(possibility){
             case "price":
-                matched = matched + " Se mostraria el precio";
-                result.speakWords("El precio del producto es de 60€");
+                matched = matched + "Precio: "+resmodel.getPrice();
+                result.speakWords("El precio del producto es de "+resmodel.getPrice());
                 break;
             case "precio":
-                matched = matched + " Se mostraria el precio";
-                result.speakWords("El precio del producto es de 60€");
+                matched = matched + "Precio: "+resmodel.getPrice();
+                result.speakWords("El precio del producto es de "+resmodel.getPrice());
                 break;
             case "ratings":
-                matched = matched + " Se mostrarian los tamaños displonibles";
-                result.speakWords("El tamaño del pene de mostro es molto piccolo");
+                matched = matched + "Puntuación: "+resmodel.getRatings()+ " estrellas";
+                result.speakWords("La puntuación es de "+resmodel.getRatings()+" estrellas.");
                 break;
             case "valoracion":
-                matched = matched + " Se mostrarian los tamaños displonibles";
-                result.speakWords("El tamaño del pene de mostro es molto piccolo");
+                matched = matched + "Puntuación: "+resmodel.getRatings()+ " estrellas";
+                result.speakWords("La puntuación es de "+resmodel.getRatings()+" estrellas.");
                 break;
             case "valoraciones":
-                matched = matched + " Se mostrarian los tamaños displonibles";
-                result.speakWords("El tamaño del pene de mostro es molto piccolo");
+                matched = matched + "Puntuación: "+resmodel.getRatings()+ " estrellas";
+                result.speakWords("La puntuación es de "+resmodel.getRatings()+" estrellas.");
                 break;
             case "comments":
-                matched = matched + "A los usuarios les gusta mucho";
-                result.speakWords("Disponible en color negro");
+                matched = matched + "Comentarios: "+(resmodel.getSentymental_analysis()*100)+" %Positividad";
+                result.speakWords("Los comentarios son positivos");
                 break;
             case "comentarios":
-                matched = matched + "A los usuarios les gusta mucho";
-                result.speakWords("Disponible en color negro");
+                matched = matched + "Comentarios: "+(resmodel.getSentymental_analysis()*100)+" %Positividad";
+                result.speakWords("Los comentarios son positivos");
                 break;
             case "color":
                 matched = matched + " Se mostrarian los colores disponibles";
                 break;
             case "modelos":
-                matched = matched + " Se mostrarian otros modelos";
-                result.speakWords("El modelo es el Adidas Gazelle");
+                matched = matched + "Modelo: "+resmodel.getModel();
+                result.speakWords("El modelo es el "+resmodel.getModel());
                 break;
             case "opciones":
                 matched = matched + " Se mostrarian otros modelos";

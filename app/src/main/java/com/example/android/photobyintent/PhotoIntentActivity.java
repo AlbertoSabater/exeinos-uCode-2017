@@ -38,7 +38,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.VideoView;
 
-public class PhotoIntentActivity extends Activity {
+public class PhotoIntentActivity extends AppCompatActivity {
     private static final String NODE_IP = "http://192.168.2.5:8081";
     private static final String TAG = "PHOTO INTENT";
 
