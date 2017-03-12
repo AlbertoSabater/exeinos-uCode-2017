@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, PhotoIntentActivity!</string>
+    <string name="app_name">Exeinos is all in</string>
+    <string name="btnIntend">Capture my sneaker</string>
+    <string name="speakButton">Talk to me!</string>
+    <string name="cannot">Cannot</string>
+    <string name="album_name">CameraSample</string>
+    <string name="price">price</string>
+    <string name="size">size</string>
+    <string name="colors">available colors</string>
+    <string name="models">other models</string>
+</resources>

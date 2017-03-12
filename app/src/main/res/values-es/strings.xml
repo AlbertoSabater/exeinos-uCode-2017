@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Exeinos are all in</string>
+    <string name="price">precio</string>
+    <string name="size">talla</string>
+    <string name="colors">colores disponibles</string>
+    <string name="models">otros modelos</string>
+    <string name="btnIntendS">¡Te escucho!</string>
+</resources>
