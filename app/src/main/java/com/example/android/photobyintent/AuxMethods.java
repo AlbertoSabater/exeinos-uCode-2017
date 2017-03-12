@@ -1,11 +1,15 @@
 package com.example.android.photobyintent;
 
+import android.content.pm.PermissionGroupInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.TextView;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,16 +21,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 
-import io.socket.client.IO;
-import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -48,19 +51,19 @@ import static android.R.attr.name;
 
 public class AuxMethods {
     ResultActivity result;
-
+    PhotoIntentActivity photo;
     private static final String TAG = "SOCKET";
-    private Socket socket;
 
-    public AuxMethods(ResultActivity res){
+    public AuxMethods(ResultActivity res, PhotoIntentActivity inphoto){
         result=res;
+        photo=inphoto;
     }
     /**
      * Returns an array containing the words matched
      *
      * @return ArrayList<String> containing the recognized words from the phrase
      */
-    protected ArrayList<String> getWords(ArrayList<String> heard){
+    protected ArrayList<String> getWords(ArrayList<String> heard, ResultModel model){
 
         ArrayList<String> matches = new ArrayList<String>();
 
@@ -69,7 +72,7 @@ public class AuxMethods {
         {
             for (String word: match.split(" "))
             {
-                String matched = getMatches(word);
+                String matched = getMatches(word,model);
                 if(matched!=null){
                     matched.toString(); // CAMBIAR PARA PONER BONITO
                     matches.add(matched.toString());
@@ -83,7 +86,7 @@ public class AuxMethods {
 
 
 
-    protected String getMatches(String possibility){
+    protected String getMatches(String possibility,ResultModel resmodel){
         String matched = "";
 
         switch(possibility){
@@ -91,11 +94,27 @@ public class AuxMethods {
                 matched = matched + " Se mostraria el precio";
                 result.speakWords("El precio del producto es de 60€");
                 break;
+            case "precio":
+                matched = matched + " Se mostraria el precio";
+                result.speakWords("El precio del producto es de 60€");
+                break;
             case "ratings":
                 matched = matched + " Se mostrarian los tamaños displonibles";
                 result.speakWords("El tamaño del pene de mostro es molto piccolo");
                 break;
+            case "valoracion":
+                matched = matched + " Se mostrarian los tamaños displonibles";
+                result.speakWords("El tamaño del pene de mostro es molto piccolo");
+                break;
+            case "valoraciones":
+                matched = matched + " Se mostrarian los tamaños displonibles";
+                result.speakWords("El tamaño del pene de mostro es molto piccolo");
+                break;
             case "comments":
+                matched = matched + "A los usuarios les gusta mucho";
+                result.speakWords("Disponible en color negro");
+                break;
+            case "comentarios":
                 matched = matched + "A los usuarios les gusta mucho";
                 result.speakWords("Disponible en color negro");
                 break;
@@ -106,10 +125,20 @@ public class AuxMethods {
                 matched = matched + " Se mostrarian otros modelos";
                 result.speakWords("El modelo es el Adidas Gazelle");
                 break;
+            case "opciones":
+                matched = matched + " Se mostrarian otros modelos";
+                result.speakWords("El modelo es el Adidas Gazelle");
+                break;
             case "otras":
                 matched = matched + " Se mostrarian otros modelos";
                 break;
+            case "others":
+                matched = matched + " Se mostrarian otros modelos";
+                break;
             case "zapatillas":
+                matched = matched + " Se mostrarian otros modelos";
+                break;
+            case "snickers":
                 matched = matched + " Se mostrarian otros modelos";
                 break;
             default:
@@ -121,15 +150,6 @@ public class AuxMethods {
         return matched;
     }
 
-    public void sendImage(String path)
-    {
-        JSONObject sendData = new JSONObject();
-        try{
-            sendData.put("image", encodeImage(path));
-            socket.emit("message",sendData);
-        }catch(JSONException e){
-        }
-    }
 
     private String encodeImage(String path)
     {
@@ -149,44 +169,6 @@ public class AuxMethods {
         return encImage;
 
     }
-
-    public boolean connectToNodeServer(String ip, String path){
-        Log.d(TAG, "Entro en connectToNodeServer");
-        try {
-            socket = IO.socket(ip);
-        } catch (java.net.URISyntaxException e) {
-            Log.d(TAG, "Ha petado porque no encuentra el servidor");
-            return false;
-        }
-        socket.connect();
-
-        socket.on("transfered", onTransfered);
-//        socket.on("user joined", onUserJoined);
-//        socket.on("user left", onUserLeft);
-//        socket.on("typing", onTyping);
-//        socket.on("stop typing", onStopTyping);
-
-        JSONObject sendData = new JSONObject();
-        try{
-            sendData.put("image", encodeImage(path));
-            socket.emit("image_upload",sendData);
-        }catch(JSONException e){
-            Log.d(TAG, "Ha petado porque da un JSON Exception");
-            socket.close();
-            return false;
-        }
-
-        //socket.close();
-        return true;
-    }
-
-    private Emitter.Listener onTransfered = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            Log.i(TAG, "transfered");
-        }
-    };
-
 
     protected void callWS_upload(String photoPath){
         String API_BASE_URL = "http://192.168.2.3:8080";
@@ -288,6 +270,13 @@ public class AuxMethods {
             public void onResponse(Call<ResponseBody> call,
                                    Response<ResponseBody> response) {
                 Log.v("Upload", "success");
+
+                try {
+                    photo.startNewActivity(response.body().string());
+                } catch (IOException e) {
+
+
+                }
             }
 
             @Override

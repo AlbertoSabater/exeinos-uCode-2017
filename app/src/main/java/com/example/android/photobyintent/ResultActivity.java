@@ -18,6 +18,9 @@ import android.widget.Toast;
 
 import com.google.gson.internal.bind.ArrayTypeAdapter;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -38,16 +41,41 @@ public class ResultActivity extends Activity implements TextToSpeech.OnInitListe
     private AuxMethods auxM;
     ImageView imageView;
     ListView listView;
+    ResultModel modelRes;
     String url="http://2.bp.blogspot.com/-oPQ_xsVNzVI/Ts8YhbVekCI/AAAAAAAAAqg/mJSLV3HI2Do/s1600/adidas%20superstar%20(2).jpg";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent i = getIntent();
+        String mod = i.getStringExtra("modelo");
+        JSONObject jObject = null;
+        String modelo = null;
+        String ratings = null;
+        String sentimiento = null;
+        String url = null;
+        String precio = null;
+        try {
+        jObject = new JSONObject(mod);
+            jObject = new JSONObject(mod);
+             modelo=jObject.get("modelo").toString();
+             ratings=jObject.get("rating").toString();
+             sentimiento=jObject.get("sentiment").toString();
+             url=jObject.get("url").toString();
+             precio=jObject.get("precio").toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Log.d("debug",modelo);
+        Log.d("debug",url);
+         modelRes = new ResultModel(url,modelo,Double.parseDouble(precio), Double.parseDouble(ratings),Double.parseDouble(sentimiento));
+
+        Log.d("debug",modelo.toString());
         setContentView(R.layout.activity_result);
-        auxM=new AuxMethods(this);
+        auxM=new AuxMethods(this,null);
         listView = (ListView) findViewById(R.id.list);
         imageView= (ImageView) findViewById(R.id.imageViewResult);
-        new RetrieveFeedTask(this).execute(url);
+        new RetrieveFeedTask(this).execute(modelRes.getUrl());
 
         Button speakButton = (Button) findViewById(R.id.speakButton);
         Log.d("speak",speakButton.toString());
@@ -77,7 +105,7 @@ public class ResultActivity extends Activity implements TextToSpeech.OnInitListe
                             RecognizerIntent.EXTRA_RESULTS);
 
                     Log.i(TAG, "heard: " + heard.size());
-                    ArrayList<String> matches = auxM.getWords(heard);
+                    ArrayList<String> matches = auxM.getWords(heard,modelRes);
                     listView.setAdapter(new ArrayAdapter<String>(this,
                             android.R.layout.simple_list_item_1, android.R.id.text1, matches));
                     Log.i(TAG, "matches: " + matches.size());

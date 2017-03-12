@@ -7,11 +7,11 @@ package com.example.android.photobyintent;
 public class ResultModel {
     private String url;
     private String model;
-    private int price;
-    private int ratings;
-    private int sentymental_analysis;
+    private double price;
+    private double ratings;
+    private double sentymental_analysis;
 
-    public ResultModel(String url, String model, int price, int ratings, int sentymental_analysis) {
+    public ResultModel(String url, String model, double price, double ratings, double sentymental_analysis) {
         this.url = url;
         this.model = model;
         this.price = price;
@@ -35,7 +35,7 @@ public class ResultModel {
         this.model = model;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
@@ -43,7 +43,7 @@ public class ResultModel {
         this.price = price;
     }
 
-    public int getRatings() {
+    public double getRatings() {
         return ratings;
     }
 
@@ -51,7 +51,7 @@ public class ResultModel {
         this.ratings = ratings;
     }
 
-    public int getSentymental_analysis() {
+    public double getSentymental_analysis() {
         return sentymental_analysis;
     }
 

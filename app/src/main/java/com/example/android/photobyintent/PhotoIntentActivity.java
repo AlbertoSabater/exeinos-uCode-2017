@@ -158,7 +158,7 @@ public class PhotoIntentActivity extends Activity {
                 "Yes",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-//						auxM.callWS_try(photoPath,bitmap);
+						auxM.callWS_try(photoPath,bitmap);
 						// auxM.callWS_upload(photoPath);
 
 //                        Log.d(TAG, "IP: " + NODE_IP);
@@ -168,8 +168,7 @@ public class PhotoIntentActivity extends Activity {
 						mImageView.setVisibility(View.INVISIBLE);
 						mImageBitmap = null;
 						mImageView.invalidate();
-						Intent intent = new Intent(getApplicationContext(), ResultActivity.class);
-						startActivity(intent);
+
 					}
                 });
 
@@ -194,7 +193,11 @@ public class PhotoIntentActivity extends Activity {
 		alert11.show();
     }
 
-
+	public void startNewActivity(String model){
+		Intent i = new Intent(this, ResultActivity.class);
+		i.putExtra("modelo", model);
+		startActivity(i);
+	}
 
 
 	private void galleryAddPic() {
@@ -262,7 +265,7 @@ public class PhotoIntentActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-        auxM = new AuxMethods(null);
+        auxM = new AuxMethods(null,this);
 		//auxM.callWS_test();
 		mImageView = (ImageView) findViewById(R.id.imageView1);
 		mImageBitmap = null;
