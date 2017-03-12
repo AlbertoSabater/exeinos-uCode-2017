@@ -156,7 +156,7 @@ public class PhotoIntentActivity extends AppCompatActivity {
                 "Yes",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-						//auxM.callWS_try(photoPath,bitmap);
+						auxM.callWS_try(photoPath,bitmap);
 						// auxM.callWS_upload(photoPath);
                         dialog.cancel();
 						mImageView.setVisibility(View.INVISIBLE);
@@ -256,7 +256,7 @@ public class PhotoIntentActivity extends AppCompatActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-        auxM = new AuxMethods();
+        auxM = new AuxMethods(null);
 		//auxM.callWS_test();
 		mImageView = (ImageView) findViewById(R.id.imageView1);
 		mImageBitmap = null;

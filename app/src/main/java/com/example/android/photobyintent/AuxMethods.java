@@ -15,11 +15,14 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,7 +35,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class AuxMethods {
+    ResultActivity result;
 
+    public AuxMethods(ResultActivity res){
+        result=res;
+    }
     /**
      * Returns an array containing the words matched
      *
@@ -61,17 +68,21 @@ public class AuxMethods {
         String matched = "";
 
         switch(possibility){
-            case "precio":
+            case "price":
                 matched = matched + " Se mostraria el precio";
+                result.speakWords("El precio del producto es de 60€");
                 break;
-            case "tamaño":
+            case "ratings":
                 matched = matched + " Se mostrarian los tamaños displonibles";
+                result.speakWords("El tamaño del pene de mostro es molto piccolo");
                 break;
-            case "colores":
-                matched = matched + " Se mostrarian los colores disponibles";
+            case "comments":
+                matched = matched + "A los usuarios les gusta mucho";
+                result.speakWords("Disponible en color negro");
                 break;
-            case "modelos":
+            case "model":
                 matched = matched + " Se mostrarian otros modelos";
+                result.speakWords("El modelo es el Adidas Gazelle");
                 break;
             default:
 //                matched = "No estoy pillando nada " + possibility ;
@@ -130,7 +141,7 @@ public class AuxMethods {
             imgFiles.put("fileilename=\""+"zapa",RequestBody.create(MEDIA_TYPE, file));
         //}
 
-        Call<ResponseBody> call = apiService.upload("DummyValue", imgFiles);
+        /*Call<ResponseBody> call = apiService.upload("DummyValue", imgFiles);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -140,13 +151,21 @@ public class AuxMethods {
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.d("PostSnapResponse", t.getMessage());
             }
-        });
+        });*/
     }
 
     protected void callWS_try(String photoPath,Bitmap bitmap){
         String API_BASE_URL = "http://192.168.2.3:8080";
 
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+    // set your desired log level
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+    // add your other interceptors …
+
+    // add logging as last interceptor
+        httpClient.addInterceptor(logging);  // <-- this is the important line!
 
         Retrofit.Builder builder =
                 new Retrofit.Builder()
@@ -162,8 +181,45 @@ public class AuxMethods {
                         )
                         .build();
 
-        ServerManager apiService = retrofit.create(ServerManager.class);
+        ServerManager service = retrofit.create(ServerManager.class);
+        // create upload service client
 
+        // https://github.com/iPaulPro/aFileChooser/blob/master/aFileChooser/src/com/ipaulpro/afilechooser/utils/FileUtils.java
+        // use the FileUtils to get the actual file by uri
+        File file = new File(photoPath);
+
+        // create RequestBody instance from file
+        RequestBody requestFile =
+                RequestBody.create(
+                        MediaType.parse("image/*"),
+                        file
+                );
+
+        // MultipartBody.Part is used to send also the actual file name
+        MultipartBody.Part body =
+                MultipartBody.Part.createFormData("picture", file.getName(), requestFile);
+
+        // add another part within the multipart request
+        String descriptionString = "hello, this is description speaking";
+        RequestBody description =
+                RequestBody.create(
+                        okhttp3.MultipartBody.FORM, descriptionString);
+
+        // finally, execute the request
+        Call<ResponseBody> call = service.upload(body);
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call,
+                                   Response<ResponseBody> response) {
+                Log.v("Upload", "success");
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("Upload error:", t.getMessage());
+            }
+        });
+/*
         InputStream inputStream = null;//You can get an inputStream using any IO API
         Log.d("debug",photoPath);
         try {
@@ -207,7 +263,7 @@ public class AuxMethods {
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 Log.d("PostSnapResponse", t.getMessage());
             }
-        });
+        });*/
     }
     /*
     protected void callWS_upload(String photoPath){

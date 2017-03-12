@@ -1,6 +1,7 @@
 package com.example.android.photobyintent;
 import java.util.Map;
 
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 import okhttp3.ResponseBody;
@@ -17,13 +18,16 @@ import retrofit2.http.Path;
  */
 public interface ServerManager {
 
-    @Multipart
-    @POST("/upload")
-    Call<ResponseBody> upload(@Part("description") String description, @PartMap Map<String, RequestBody> image);
 
     @Multipart
     @POST("/upload")
     Call<ResponseBody> prueba(@Part("image") String user);
+
+    @Multipart
+    @POST("/upload")
+    Call<ResponseBody> upload(
+            @Part MultipartBody.Part file
+    );
     /*@Multipart
     @POST("/upload")
     void upload(@Part("myfile") TypedFile file,
